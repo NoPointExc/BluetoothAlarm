@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BluetoothAlarm</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="sensor1_ok">1:ok</string>
+    <string name="sensor2_ok">2:ok</string>
+    <string name="sensor3_ok">3:ok</string>
+    <string name="sensor4_ok">4:ok</string>
+    <string name="sensor1_warning">1:warning</string>
+    <string name="sensor2_warning">2:warning</string>
+    <string name="sensor3_warning">3:warning</string>
+    <string name="sensor4_warning">4:warning</string>
+    <string name="text_listener">Listener</string>
+    
+        <!--  BluetoothChat -->
+    <string name="send">Send</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_connected_to">connected: </string>
+    <string name="title_not_connected">not connected</string>
+
+    <!--  DeviceListActivity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+
+    <!-- Options Menu -->
+    <string name="connect">Connect a device</string>
+    <string name="discoverable">Make discoverable</string>
+
+</resources>
