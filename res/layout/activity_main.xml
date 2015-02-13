@@ -33,7 +33,7 @@
         android:baselineAligned="false"
         android:orientation="horizontal" >
 
-        <!-- switch 3;switch4- -->
+        <!-- switch 1;switch2- -->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -42,6 +42,7 @@
             android:orientation="vertical" >
 
             <TextView
+                android:id="@+id/textView_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sensor1_ok" />
@@ -49,9 +50,12 @@
             <Switch
                 android:id="@+id/switch_sensor_1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:onClick="onSwitchClick" />
 
             <TextView
+                
+                android:id="@+id/textView_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sensor2_ok" />
@@ -59,7 +63,9 @@
             <Switch
                 android:id="@+id/switch_sensor_2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:onClick="onSwitchClick"
+                 />
         </LinearLayout>
 
         <!-- switch 3;switch4- -->
@@ -71,6 +77,8 @@
             android:orientation="vertical" >
 
             <TextView
+                
+                android:id="@+id/textView_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sensor3_ok" />
@@ -78,9 +86,13 @@
             <Switch
                 android:id="@+id/switch_sensor_3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content" 
+                android:onClick="onSwitchClick"
+                />
 
             <TextView
+                
+                android:id="@+id/textView_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sensor4_ok" />
@@ -88,7 +100,9 @@
             <Switch
                 android:id="@+id/switch_sensor_4"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content" 
+                android:onClick="onSwitchClick"
+                />
         </LinearLayout>
     </LinearLayout>
 
