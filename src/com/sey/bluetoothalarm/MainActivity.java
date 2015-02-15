@@ -2,8 +2,8 @@ package com.sey.bluetoothalarm;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,12 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +21,6 @@ public class MainActivity extends Activity {
 	private static final boolean D = true;
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
-	// Broadcast block state
-	private SharedPreferences.Editor editor;
-	private SharedPreferences myPrefs;
 
 	// Intent request codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -48,8 +39,6 @@ public class MainActivity extends Activity {
 	private TextView[] textView;
 	// sensors on/off
 	private boolean sensorOn[] = { false, false, false, false };
-	// sensors states alarm/Not
-	private boolean sensorAlarm[] = { false, false, false, false };
 	// Member object for the chat services
 	private BluetoothChatService mChatService = null;
 	// Local Bluetooth adapter
@@ -59,8 +48,8 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		textView=new TextView[4];
-		
+		textView = new TextView[4];
+
 		textView[0] = (TextView) findViewById(R.id.textView_0);
 		textView[1] = (TextView) findViewById(R.id.textView_1);
 		textView[2] = (TextView) findViewById(R.id.textView_2);
@@ -104,6 +93,50 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	@Override
+	public synchronized void onResume() {
+		super.onResume();
+		if (D)
+			Log.e(TAG, "+ ON RESUME +");
+
+		// Performing this check in onResume() covers the case in which BT was
+		// not enabled during onStart(), so we were paused to enable it...
+		// onResume() will be called when ACTION_REQUEST_ENABLE activity
+		// returns.
+		if (mChatService != null) {
+			// Only if the state is STATE_NONE, do we know that we haven't
+			// started already
+			if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+				// Start the Bluetooth chat services
+				mChatService.start();
+			}
+		}
+	}
+
+	@Override
+	public synchronized void onPause() {
+		super.onPause();
+		if (D)
+			Log.e(TAG, "- ON PAUSE -");
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (D)
+			Log.e(TAG, "-- ON STOP --");
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		// Stop the Bluetooth chat services
+		if (mChatService != null)
+			mChatService.stop();
+		if (D)
+			Log.e(TAG, "--- ON DESTROY ---");
+	}
+
 	private void ensureDiscoverable() {
 		if (D)
 			Log.d(TAG, "ensure discoverable");
@@ -113,6 +146,29 @@ public class MainActivity extends Activity {
 			discoverableIntent.putExtra(
 					BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
 			startActivity(discoverableIntent);
+		}
+	}
+
+	/**
+	 * Sends a message.
+	 * 
+	 * @param message
+	 *            A string of text to send.
+	 */
+	private void sendMessage(String message) {
+		// Check that we're actually connected before trying anything
+		if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
+			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
+					.show();
+			return;
+		}
+
+		// Check that there's actually something to send
+		if (message.length() > 0) {
+			// Get the message bytes and tell the BluetoothChatService to write
+			byte[] send = message.getBytes();
+			mChatService.write(send);
+
 		}
 	}
 
@@ -185,9 +241,9 @@ public class MainActivity extends Activity {
 				}
 				break;
 			case MESSAGE_WRITE:
-				byte[] writeBuf = (byte[]) msg.obj;
+				//byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
-				String writeMessage = new String(writeBuf);
+				//String writeMessage = new String(writeBuf);
 				// mConversationArrayAdapter.add("Me:  " + writeMessage);
 				// ***************************Test output
 				// message*****************
@@ -252,41 +308,56 @@ public class MainActivity extends Activity {
 					"updateSensorStates(String s)_Exception:" + e.getMessage());
 		}
 	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (D)
+			Log.d(TAG, "onActivityResult " + resultCode);
+		switch (requestCode) {
+		case REQUEST_CONNECT_DEVICE:
+			// When DeviceListActivity returns with a device to connect
+			if (resultCode == Activity.RESULT_OK) {
+				// Get the device MAC address
+				String address = data.getExtras().getString(
+						DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+				// Get the BLuetoothDevice object
+				BluetoothDevice device = mBluetoothAdapter
+						.getRemoteDevice(address);
+				// Attempt to connect to the device
+				mChatService.connect(device);
+			}
+			break;
+		case REQUEST_ENABLE_BT:
+			// When the request to enable Bluetooth returns
+			if (resultCode == Activity.RESULT_OK) {
+				Log.d(TAG, "setup Bluetooth");
+				// Initialize the BluetoothChatService to perform bluetooth
+				// connections
+				mChatService = new BluetoothChatService(this, mHandler);
+			} else {
+				// User did not enable Bluetooth or an error occured
+				Log.d(TAG, "BT not enabled");
+				Toast.makeText(this, R.string.bt_not_enabled_leaving,
+						Toast.LENGTH_SHORT).show();
+				finish();
+			}
+		}
+	}
+
 	/**
 	 * Dial 911
 	 * 
 	 * @param none
-	 *           
-	 */
-	
-	private void dial(){
-		//NOTE: No one other than system  app is allowed to dial emergency number
-		Intent dialIntent=new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+"911"));
-		//Intent dialIntent=new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+"911"));
-		this.startActivity(dialIntent);
-	}
-
-	/**
-	 * Sends a message.
 	 * 
-	 * @param message
-	 *            A string of text to send.
 	 */
-	private void sendMessage(String message) {
-		// Check that we're actually connected before trying anything
-		if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
-					.show();
-			return;
-		}
 
-		// Check that there's actually something to send
-		if (message.length() > 0) {
-			// Get the message bytes and tell the BluetoothChatService to write
-			byte[] send = message.getBytes();
-			mChatService.write(send);
-
-		}
+	private void dial() {
+		// NOTE: No one other than system app is allowed to dial emergency
+		// number
+		Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"
+				+ "911"));
+		// Intent dialIntent=new Intent(Intent.ACTION_CALL,
+		// Uri.parse("tel:"+"911"));
+		this.startActivity(dialIntent);
 	}
 
 	@Override
