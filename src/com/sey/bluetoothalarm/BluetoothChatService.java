@@ -328,6 +328,7 @@ public class BluetoothChatService {
 			try {
 				// Listen for all 7 UUIDs
 				// for (int i = 0; i < 7; i++) {
+				//debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				serverSocket = mAdapter.listenUsingRfcommWithServiceRecord(
 						NAME, mUuid);
 				socket = serverSocket.accept();

@@ -1,5 +1,6 @@
 package com.sey.bluetoothalarm;
 
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +36,7 @@ public class MainActivity extends Activity {
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
 	// Layout Views
-	private TextView mTitle;
+	//private TextView mTitle;
 	// textView1~4
 	private TextView[] textView;
 	// sensors on/off
@@ -47,16 +49,26 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (D)
+			Log.e(TAG, "+++ ON CREATE +++");
+		
+		// Set up the window layout
+		//requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.activity_main);
+		//getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
+		//		R.layout.custom_title);
+		
+		// Set up the custom title
+		//mTitle = (TextView) findViewById(R.id.title_left_text);
+		//mTitle.setText(R.string.app_name);
+		//mTitle = (TextView) findViewById(R.id.title_right_text);
+
 		textView = new TextView[4];
 
 		textView[0] = (TextView) findViewById(R.id.textView_0);
 		textView[1] = (TextView) findViewById(R.id.textView_1);
 		textView[2] = (TextView) findViewById(R.id.textView_2);
 		textView[3] = (TextView) findViewById(R.id.textView_3);
-		// Set up the custom title
-		mTitle = (TextView) findViewById(R.id.title_left_text);
-		mTitle = (TextView) findViewById(R.id.title_right_text);
 
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -227,23 +239,33 @@ public class MainActivity extends Activity {
 					Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
 				switch (msg.arg1) {
 				case BluetoothChatService.STATE_CONNECTED:
-					mTitle.setText(R.string.title_connected_to);
-					mTitle.append(mConnectedDeviceName);
+					//mTitle.setText(R.string.title_connected_to);
+					//mTitle.append(mConnectedDeviceName);
 					// mConversationArrayAdapter.clear();
+					Toast.makeText(getApplicationContext(), "STATE_CONNECTED",
+							Toast.LENGTH_SHORT).show();
+					
 					break;
 				case BluetoothChatService.STATE_CONNECTING:
-					mTitle.setText(R.string.title_connecting);
+					//mTitle.setText(R.string.title_connecting);
+					Toast.makeText(getApplicationContext(), "STATE_CONNECTING",
+							Toast.LENGTH_SHORT).show();
 					break;
 				case BluetoothChatService.STATE_LISTEN:
 				case BluetoothChatService.STATE_NONE:
-					mTitle.setText(R.string.title_not_connected);
+					//mTitle.setText(R.string.title_not_connected);
+					// System.out.println(R.string.title_not_connected);
+					Toast.makeText(getApplicationContext(), "STATE_NONE",
+							Toast.LENGTH_SHORT).show();
+					
+					
 					break;
 				}
 				break;
 			case MESSAGE_WRITE:
-				//byte[] writeBuf = (byte[]) msg.obj;
+				// byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
-				//String writeMessage = new String(writeBuf);
+				// String writeMessage = new String(writeBuf);
 				// mConversationArrayAdapter.add("Me:  " + writeMessage);
 				// ***************************Test output
 				// message*****************
